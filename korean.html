@@ -234,14 +234,11 @@
      ============================== -->
 
 <!-- 1️⃣ Placeholder that will be replaced by the fetched navigation -->
-<div id="site-nav"><p class="nav-loading">Loading menu…</p></div>
+<div id="site-nav"><p class="nav-loading">Loading menu...</p></div>
 
-<!-- 2️⃣ Loader script (deferred so it runs after the HTML is parsed) -->
+<!-- 2️⃣ Loader + hamburger‑toggle script (deferred) -->
 <script defer>
 document.addEventListener('DOMContentLoaded', () => {
-  // -----------------------------------------------------------------
-  // Find the placeholder container
-  // -----------------------------------------------------------------
   const container = document.getElementById('site-nav');
   if (!container) {
     console.error('❌ #site-nav container not found – navigation cannot be loaded.');
@@ -249,15 +246,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------------------------------------------------
-  // Build the URL to nav.html
-  //   • Uses the same folder as the current page (adjust if you store nav.html elsewhere)
-  //   • Adds a timestamp to bust the browser cache on every load
+  // Build the URL to nav.html (same folder as the current page)
   // -----------------------------------------------------------------
   const basePath = location.pathname.split('/').slice(0, -1).join('/') + '/';
-  const navUrl   = basePath + 'nav.html?v=' + Date.now();
+  const navUrl   = basePath + 'nav.html?v=' + Date.now();   // cache‑buster
 
   // -----------------------------------------------------------------
-  // Fetch the navigation fragment
+  // Fetch the navigation fragment and inject it
   // -----------------------------------------------------------------
   fetch(navUrl)
     .then(resp => {
@@ -265,19 +260,32 @@ document.addEventListener('DOMContentLoaded', () => {
       return resp.text();
     })
     .then(html => {
-      // Insert the fetched HTML into the placeholder
-      container.innerHTML = html;
+      container.innerHTML = html;               // <-- inject the fragment
 
       // -----------------------------------------------------------------
-      // Highlight the link that matches the current page (adds .active class)
+      // ----- AFTER INJECTION: set up the hamburger behaviour ----------
+      // -----------------------------------------------------------------
+      const toggleBtn = document.getElementById('nav-toggle');
+      const navLinks  = document.getElementById('nav-links');
+
+      if (toggleBtn && navLinks) {
+        toggleBtn.addEventListener('click', () => {
+          const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+          toggleBtn.setAttribute('aria-expanded', !expanded);
+          navLinks.classList.toggle('show');           // slide drawer
+          document.body.classList.toggle('menu-open', !expanded); // overlay + scroll‑lock
+        });
+      }
+
+      // -----------------------------------------------------------------
+      // Highlight the link that matches the current page (adds .active)
       // -----------------------------------------------------------------
       const curPage = location.pathname.split('/').pop() || 'index.html';
-      const link    = container.querySelector(`a[href="${curPage}"]`);
-      if (link) link.classList.add('active');
+      const curLink = container.querySelector(`a[href="${curPage}"]`);
+      if (curLink) curLink.classList.add('active');
     })
     .catch(err => {
       console.error('❌ Navigation load failed:', err);
-      // Show a friendly error message if the fetch fails
       container.innerHTML = '<p class="nav-error">The Serendipity Engine: Breaking Information Apartheid Through Global Discovery Networks</p>';
     });
 });
