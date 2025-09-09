@@ -229,17 +229,39 @@
     </style>
 </head>
 <body>
-    <div id="site-nav"></div>
+     <div id="site-nav">
 
-<script>
-  // Load nav.html via fetch and inject it into the placeholder div
-  fetch('nav.html')
-    .then(r => r.text())
-    .then(html => {
-      document.getElementById('site‑nav').innerHTML = html;
-    })
-    .catch(err => console.error('Failed to load navigation:', err));
-</script>
+  <!-- ==== NAVIGATION LOADER ==== -->
+  <script>
+    // Run after the whole document is parsed
+    document.addEventListener('DOMContentLoaded', () => {
+      // Build a path that works both at the repo root and in sub‑folders
+      const basePath = location.pathname.split('/').slice(0, -1).join('/') + '/';
+      const navUrl = basePath + 'nav.html';
+
+      fetch(navUrl)
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.text();
+        })
+        .then(html => {
+          const container = document.getElementById('site-nav');
+          if (container) {
+            container.innerHTML = html;
+
+            // OPTIONAL: Highlight the current page in the menu
+            const current = location.pathname.split('/').pop() || 'index.html';
+            const link = container.querySelector(`a[href="${current}"]`);
+            if (link) link.classList.add('active');
+          }
+        })
+        .catch(err => {
+          console.error('❌ Navigation failed to load:', err);
+          // Fallback – you could show a plain‑text menu here if you like
+        });
+    });
+  </script>
+</div>
     <div class="container">
         <header class="header">
             <h1>🌟 세렌디피티 발견 엔진</h1>
