@@ -1,94 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Language Navigation</title>
+<!-- nav.html – **fragment only** (no <html>, <head>, or <body> tags) -->
+<nav class="main-nav">
+  <ul>
+    <li><a href="index.html">English</a></li>
+    <li><a href="german.html">Deutsch</a></li>
+    <li><a href="french.html">Français</a></li>
+    <li><a href="japanese.html">日本語</a></li>
+    <li><a href="korean.html">한국어</a></li>
+    <li><a href="hindi.html">हिन्दी</a></li>
+    <li><a href="portuguese.html">Português</a></li>
+    <li><a href="spanish.html">Español</a></li>
+  </ul>
+</nav>
 
-  <style>
-    /* --------------------------------------------------------------
-       Fixed language bar – always visible at the top
-       -------------------------------------------------------------- */
-    .main-nav {
-      background:#111;
-      padding:0.8rem 1rem;
-      display:flex;
-      justify-content:center;
-      position:fixed;          /* stays at the top */
-      top:0;
-      left:0;
-      right:0;
-      width:100%;
-      z-index:9999;
-      box-shadow:0 2px 6px rgba(0,0,0,0.15);
-    }
+<style>
+  /* --------------------------------------------------------------
+     Fixed language bar – always visible at the top
+     -------------------------------------------------------------- */
+  .main-nav {
+    background:#111;
+    padding:0.8rem 1rem;
+    display:flex;
+    justify-content:center;
+    position:fixed;          /* stays at the top */
+    top:0;
+    left:0;
+    right:0;
+    width:100%;
+    z-index:9999;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+  }
 
-    /* --------------------------------------------------------------
-       List layout – horizontal on desktop, vertical on mobile
-       -------------------------------------------------------------- */
+  /* --------------------------------------------------------------
+     List layout – horizontal on desktop, vertical on mobile
+     -------------------------------------------------------------- */
+  .main-nav ul {
+    list-style:none;
+    margin:0;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:1.5rem;
+  }
+  @media (max-width:600px) {
     .main-nav ul {
-      list-style:none;
-      margin:0;
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      gap:1.5rem;
+      flex-direction:column;
+      align-items:center;
     }
-    @media (max-width:600px) {
-      .main-nav ul {
-        flex-direction:column;
-        align-items:center;
-      }
-    }
+  }
 
-    /* --------------------------------------------------------------
-       Links + active‑page highlight (gold)
-       -------------------------------------------------------------- */
-    .main-nav a {
-      color:#fff;
-      text-decoration:none;
-      font-weight:500;
-    }
-    .main-nav a:hover { text-decoration:underline; }
-    .main-nav a.active { color:#ffd700; }   /* gold */
+  /* --------------------------------------------------------------
+     Links + active‑page highlight (gold)
+     -------------------------------------------------------------- */
+  .main-nav a {
+    color:#fff;
+    text-decoration:none;
+    font-weight:500;
+  }
+  .main-nav a:hover { text-decoration:underline; }
+  .main-nav a.active { color:#ffd700; }   /* gold */
 
-    /* --------------------------------------------------------------
-       Body padding – prevents content from hiding under the fixed bar
-       -------------------------------------------------------------- */
-    body {
-      padding-top:70px;          /* height of the fixed bar */
-    }
+  /* --------------------------------------------------------------
+     Body padding – prevents content from hiding under the fixed bar
+     -------------------------------------------------------------- */
+  body {
+    padding-top:70px;          /* height of the fixed bar */
+  }
 
-    /* --------------------------------------------------------------
-       Push the first non‑nav element down and strip its shadow
-       -------------------------------------------------------------- */
-    body > :first-child:not(.main-nav) {
-      margin-top:70px;               /* same as body padding‑top */
-      box-shadow:none !important;   /* remove any shadow */
-    }
-  </style>
-</head>
+  /* --------------------------------------------------------------
+     Push the first non‑nav element down and strip its shadow
+     -------------------------------------------------------------- */
+  body > :first-child:not(.main-nav) {
+    margin-top:70px;               /* same as body padding‑top */
+    box-shadow:none !important;   /* remove any shadow */
+  }
+</style>
 
-<body>
-  <nav class="main-nav">
-    <ul>
-      <li><a href="index.html">English</a></li>
-      <li><a href="german.html">Deutsch</a></li>
-      <li><a href="french.html">Français</a></li>
-      <li><a href="japanese.html">日本語</a></li>
-      <li><a href="korean.html">한국어</a></li>
-      <li><a href="hindi.html">हिन्दी</a></li>
-      <li><a href="portuguese.html">Português</a></li>
-      <li><a href="spanish.html">Español</a></li>
-    </ul>
-  </nav>
-
-  <!-- Optional: simple client‑side script to mark the current page as active -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const curPage = location.pathname.split('/').pop() || 'index.html';
-      const link = document.querySelector(`.main-nav a[href="${curPage}"]`);
-      if (link) link.classList.add('active');
-    });
-  </script>
-</body>
-</html>
+<script>
+  // Mark the current page as active (runs after the fragment is injected)
+  document.addEventListener('DOMContentLoaded', () => {
+    const curPage = location.pathname.split('/').pop() || 'index.html';
+    const link = document.querySelector(`.main-nav a[href="${curPage}"]`);
+    if (link) link.classList.add('active');
+  });
+</script>
