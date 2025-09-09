@@ -450,6 +450,17 @@
     </style>
 </head>
 <body>
+    <div id="site-nav"></div>
+
+<script>
+  // Load nav.html via fetch and inject it into the placeholder div
+  fetch('nav.html')
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById('site‑nav').innerHTML = html;
+    })
+    .catch(err => console.error('Failed to load navigation:', err));
+</script>
     <div class="bg-animation"></div>
 
     <nav id="navbar">
