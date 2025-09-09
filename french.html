@@ -450,72 +450,57 @@
     </style>
 </head>
 <body>
-     <!-- ==================== Universal Nav Loader ==================== -->
-<!-- Placeholder that will be replaced by the language‑specific nav fragment -->
-<div id="site-nav"><p class="nav-loading">Chargement du menu…</p></div>
+      <!-- ==============================
+     NAVIGATION INJECTION POINT
+     ============================== -->
 
+<!-- 1️⃣ Placeholder that will be replaced by the fetched navigation -->
+<div id="site-nav"><p class="nav-loading">Loading menu…</p></div>
+
+<!-- 2️⃣ Loader script (deferred so it runs after the HTML is parsed) -->
 <script defer>
-/**
- * Universal navigation loader.
- *  • Detects page language via <html lang="">
- *  • Loads the corresponding nav‑XX.html file
- *  • Caches the result in sessionStorage for the session
- *  • Highlights the active link
- *  • Gracefully falls back on error
- */
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('site-nav');
-    if (!container) return;
+  // -----------------------------------------------------------------
+  // Find the placeholder container
+  // -----------------------------------------------------------------
+  const container = document.getElementById('site-nav');
+  if (!container) {
+    console.error('❌ #site-nav container not found – navigation cannot be loaded.');
+    return;
+  }
 
-    // -----------------------------------------------------------------
-    // 1️⃣ Determine which nav file to load
-    // -----------------------------------------------------------------
-    const htmlLang = document.documentElement.lang?.toLowerCase() || 'en'; // default to English
-    // Expected file naming: nav-fr.html, nav-es.html, nav-en.html, …
-    const navFile = `nav-${htmlLang}.html`;
+  // -----------------------------------------------------------------
+  // Build the URL to nav.html
+  //   • Uses the same folder as the current page (adjust if you store nav.html elsewhere)
+  //   • Adds a timestamp to bust the browser cache on every load
+  // -----------------------------------------------------------------
+  const basePath = location.pathname.split('/').slice(0, -1).join('/') + '/';
+  const navUrl   = basePath + 'nav.html?v=' + Date.now();
 
-    // Build a robust absolute URL (works even when the page lives in sub‑folders)
-    const navUrl = new URL(navFile, location.href).pathname;
+  // -----------------------------------------------------------------
+  // Fetch the navigation fragment
+  // -----------------------------------------------------------------
+  fetch(navUrl)
+    .then(resp => {
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      return resp.text();
+    })
+    .then(html => {
+      // Insert the fetched HTML into the placeholder
+      container.innerHTML = html;
 
-    // -----------------------------------------------------------------
-    // 2️⃣ Session‑storage cache lookup
-    // -----------------------------------------------------------------
-    const cacheKey = `siteNav:${htmlLang}`;               // separate cache per language
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-        container.innerHTML = cached;
-        activateCurrentLink();
-        return;
-    }
-
-    // -----------------------------------------------------------------
-    // 3️⃣ Fetch the fragment
-    // -----------------------------------------------------------------
-    fetch(navUrl)
-        .then(resp => {
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            return resp.text();
-        })
-        .then(html => {
-            container.innerHTML = html;
-            // Save for the rest of the session
-            sessionStorage.setItem(cacheKey, html);
-            activateCurrentLink();
-        })
-        .catch(err => {
-            console.error('❌ Nav load failed:', err);
-            container.innerHTML =
-                '<p class="nav-error">Impossible de charger le menu.</p>';
-        });
-
-    // -----------------------------------------------------------------
-    // 4️⃣ Highlight the link that points to the current page
-    // -----------------------------------------------------------------
-    function activateCurrentLink() {
-        const curPage = location.pathname.split('/').pop() || 'index.html';
-        const link = container.querySelector(`a[href="${curPage}"]`);
-        if (link) link.classList.add('active');
-    }
+      // -----------------------------------------------------------------
+      // Highlight the link that matches the current page (adds .active class)
+      // -----------------------------------------------------------------
+      const curPage = location.pathname.split('/').pop() || 'index.html';
+      const link    = container.querySelector(`a[href="${curPage}"]`);
+      if (link) link.classList.add('active');
+    })
+    .catch(err => {
+      console.error('❌ Navigation load failed:', err);
+      // Show a friendly error message if the fetch fails
+      container.innerHTML = '<p class="nav-error">The Serendipity Engine: Breaking Information Apartheid Through Global Discovery Networks</p>';
+    });
 });
 </script>
 <!-- ==================== End Universal Nav Loader ==================== -->
