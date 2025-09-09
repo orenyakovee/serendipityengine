@@ -421,38 +421,30 @@
     </style>
 </head>
 <body>
-    <div id="site-nav"></div>
+     <!-- 1️⃣ placeholder (must be first thing after <body>) -->
+  <div id="site-nav"></div>
 
-  <!-- ==== NAVIGATION LOADER ==== -->
+  <!-- 2️⃣ navigation loader (keep the whole block) -->
   <script>
-    // Run after the whole document is parsed
     document.addEventListener('DOMContentLoaded', () => {
-      // Build a path that works both at the repo root and in sub‑folders
       const basePath = location.pathname.split('/').slice(0, -1).join('/') + '/';
       const navUrl = basePath + 'nav.html';
-
       fetch(navUrl)
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          return response.text();
-        })
+        .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
         .then(html => {
           const container = document.getElementById('site-nav');
-          if (container) {
-            container.innerHTML = html;
+          if (container) container.innerHTML = html;
 
-            // OPTIONAL: Highlight the current page in the menu
-            const current = location.pathname.split('/').pop() || 'index.html';
-            const link = container.querySelector(`a[href="${current}"]`);
-            if (link) link.classList.add('active');
-          }
+          // optional: highlight the current page
+          const cur = location.pathname.split('/').pop() || 'index.html';
+          const link = container?.querySelector(`a[href="${cur}"]`);
+          if (link) link.classList.add('active');
         })
-        .catch(err => {
-          console.error('❌ Navigation failed to load:', err);
-          // Fallback – you could show a plain‑text menu here if you like
-        });
+        .catch(err => console.error('❌ Nav load failed:', err));
     });
   </script>
+
+  <!-- 3️⃣ your page‑specific content starts here -->
     <div class="bg-animation"></div>
     
     <nav id="navbar">
