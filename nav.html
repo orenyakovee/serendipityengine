@@ -6,24 +6,24 @@
 
   <style>
     /* --------------------------------------------------------------
-       1️⃣ Fixed language bar – stays at the top while scrolling
+       Fixed language bar – always visible at the top
        -------------------------------------------------------------- */
     .main-nav {
       background:#111;
       padding:0.8rem 1rem;
       display:flex;
       justify-content:center;
-      position:fixed;          /* ★ fixed, not sticky */
+      position:fixed;          /* stays at the top */
       top:0;
       left:0;
       right:0;
       width:100%;
-      z-index:9999;            /* above everything else */
+      z-index:9999;
       box-shadow:0 2px 6px rgba(0,0,0,0.15);
     }
 
     /* --------------------------------------------------------------
-       2️⃣ List layout – horizontal on desktop, vertical on mobile
+       List layout – horizontal on desktop, vertical on mobile
        -------------------------------------------------------------- */
     .main-nav ul {
       list-style:none;
@@ -33,7 +33,6 @@
       justify-content:center;
       gap:1.5rem;
     }
-
     @media (max-width:600px) {
       .main-nav ul {
         flex-direction:column;
@@ -42,7 +41,7 @@
     }
 
     /* --------------------------------------------------------------
-       3️⃣ Link appearance + active‑page highlight (gold)
+       Links + active‑page highlight (gold)
        -------------------------------------------------------------- */
     .main-nav a {
       color:#fff;
@@ -53,33 +52,20 @@
     .main-nav a.active { color:#ffd700; }   /* gold */
 
     /* --------------------------------------------------------------
-       4️⃣ BODY padding – prevents page content from hiding under the bar
+       Body padding – prevents content from hiding under the fixed bar
        -------------------------------------------------------------- */
     body {
-      padding-top:70px;          /* height of the fixed bar (adjust if needed) */
+      padding-top:70px;          /* height of the fixed bar */
     }
 
     /* --------------------------------------------------------------
-       5️⃣ SECONDARY HEADER – push it down **under** the fixed bar
+       Generic rule to push the first non‑nav element (the secondary header)
+       down and strip its shadow – works no matter the class/name
        -------------------------------------------------------------- */
-    /* 5A – give the header a top margin equal to the bar height */
-    .site-header,
-    header {
-      margin-top:70px;           /* same value as body padding‑top */
+    body > :first-child:not(.main-nav) {
+      margin-top:70px;               /* same as body padding‑top */
+      box-shadow:none !important;   /* remove any shadow */
     }
-
-    /* 5B – OPTIONAL: remove the header’s own shadow (if it has one) */
-    .site-header,
-    header {
-      box-shadow:none !important;
-    }
-
-    /* --------------------------------------------------------------
-       6️⃣ (OPTION 1) Hide the secondary header completely
-       --------------------------------------------------------------
-    .site-header,
-    header { display:none !important; }
-    --------------------------------------------------------------- */
   </style>
 </head>
 
@@ -96,5 +82,24 @@
       <li><a href="spanish.html">Español</a></li>
     </ul>
   </nav>
+
+  <!-- The script that injects the nav – note the cache‑buster -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const basePath = location.pathname.split('/').slice(0, -1).join('/') + '/';
+      // Append a timestamp to force a fresh fetch each load
+      const navUrl = basePath + 'nav.html?v=' + Date.now();
+      fetch(navUrl)
+        .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
+        .then(html => {
+          const container = document.getElementById('site-nav');
+          if (container) container.innerHTML = html;
+          const cur = location.pathname.split('/').pop() || 'index.html';
+          const link = container?.querySelector(`a[href="${cur}"]`);
+          if (link) link.classList.add('active');
+        })
+        .catch(err => console.error('❌ Nav load failed:', err));
+    });
+  </script>
 </body>
 </html>
