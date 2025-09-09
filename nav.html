@@ -1,27 +1,45 @@
 <!-- nav.html – **fragment only** (no <html>, <head>, or <body> tags) -->
-<nav class="main-nav">
-  <ul>
-    <li><a href="index.html">English</a></li>
-    <li><a href="german.html">Deutsch</a></li>
-    <li><a href="french.html">Français</a></li>
-    <li><a href="japanese.html">日本語</a></li>
-    <li><a href="korean.html">한국어</a></li>
-    <li><a href="hindi.html">हिन्दी</a></li>
-    <li><a href="portuguese.html">Português</a></li>
-    <li><a href="spanish.html">Español</a></li>
-  </ul>
+<nav class="main-nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-container">
+    <!-- Logo / title -->
+    <div class="logo">🌐 The Serendipity Engine</div>
+
+    <!-- Hamburger button – visible on mobile -->
+    <button id="nav-toggle"
+            aria-controls="nav-links"
+            aria-expanded="false"
+            aria-label="Toggle menu">
+      <svg width="24" height="24" viewBox="0 0 100 80" fill="var(--light)">
+        <rect width="100" height="12"></rect>
+        <rect y="30" width="100" height="12"></rect>
+        <rect y="60" width="100" height="12"></rect>
+      </svg>
+    </button>
+
+    <!-- Navigation links – will be turned into a drawer on mobile -->
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">English</a></li>
+      <li><a href="german.html">Deutsch</a></li>
+      <li><a href="french.html">Français</a></li>
+      <li><a href="japanese.html">日本語</a></li>
+      <li><a href="korean.html">한국어</a></li>
+      <li><a href="hindi.html">हिन्दी</a></li>
+      <li><a href="portuguese.html">Português</a></li>
+      <li><a href="spanish.html">Español</a></li>
+    </ul>
+  </div>
 </nav>
 
 <style>
   /* --------------------------------------------------------------
-     Fixed language bar – always visible at the top
+     Fixed top bar – always visible
      -------------------------------------------------------------- */
   .main-nav {
     background:#111;
     padding:0.8rem 1rem;
     display:flex;
     justify-content:center;
-    position:fixed;          /* stays at the top */
+    position:fixed;
     top:0;
     left:0;
     right:0;
@@ -30,56 +48,116 @@
     box-shadow:0 2px 6px rgba(0,0,0,0.15);
   }
 
+  .nav-container {
+    display:flex;
+    align-items:center;
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    justify-content:space-between;
+  }
+
+  .logo {
+    color:#fff;
+    font-weight:600;
+    font-size:1.1rem;
+  }
+
   /* --------------------------------------------------------------
-     List layout – horizontal on desktop, vertical on mobile
+     Hamburger button – only shown on mobile
      -------------------------------------------------------------- */
-  .main-nav ul {
+  #nav-toggle {
+    background:none;
+    border:none;
+    cursor:pointer;
+    display:none;                 /* hidden on desktop */
+    padding:0.4rem;
+    color:#fff;
+  }
+
+  /* --------------------------------------------------------------
+     Desktop link list
+     -------------------------------------------------------------- */
+  .nav-links {
     list-style:none;
     margin:0;
     display:flex;
     flex-wrap:wrap;
-    justify-content:center;
     gap:1.5rem;
   }
-  @media (max-width:600px) {
-    .main-nav ul {
-      flex-direction:column;
-      align-items:center;
-    }
-  }
 
-  /* --------------------------------------------------------------
-     Links + active‑page highlight (gold)
-     -------------------------------------------------------------- */
-  .main-nav a {
+  .nav-links a {
     color:#fff;
     text-decoration:none;
     font-weight:500;
   }
-  .main-nav a:hover { text-decoration:underline; }
-  .main-nav a.active { color:#ffd700; }   /* gold */
+  .nav-links a:hover { text-decoration:underline; }
+  .nav-links a.active { color:#ffd700; }   /* gold highlight */
 
   /* --------------------------------------------------------------
-     Body padding – prevents content from hiding under the fixed bar
+     Mobile drawer – slide‑in from the right
      -------------------------------------------------------------- */
-  body {
-    padding-top:70px;          /* height of the fixed bar */
+  @media (max-width:600px) {
+    #nav-toggle { display:block; }   /* show hamburger */
+
+    .nav-links {
+      position:fixed;
+      top:0;
+      right:-260px;                  /* start hidden off‑screen */
+      width:260px;
+      height:100vh;
+      background:#111;
+      flex-direction:column;
+      align-items:flex-start;
+      padding:80px 20px 20px;       /* leave room for the bar */
+      gap:1.2rem;
+      transition:right .3s ease;
+      z-index:10000;                /* above page content */
+    }
+
+    .nav-links.show { right:0; }    /* slide in */
+
+    /* Dim the page behind the drawer (optional) */
+    body.menu-open::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.4);
+      z-index:9999;                 /* just under the drawer */
+    }
+
+    /* Prevent scrolling while menu is open */
+    body.menu-open { overflow-y:hidden; }
   }
 
   /* --------------------------------------------------------------
-     Push the first non‑nav element down and strip its shadow
+     Body padding – keep page content from hiding under the bar
      -------------------------------------------------------------- */
+  body { padding-top:70px; }
   body > :first-child:not(.main-nav) {
-    margin-top:70px;               /* same as body padding‑top */
-    box-shadow:none !important;   /* remove any shadow */
+    margin-top:70px;
+    box-shadow:none !important;
   }
 </style>
 
 <script>
-  // Mark the current page as active (runs after the fragment is injected)
+  // Toggle the mobile drawer and manage body class for overlay/scroll lock
   document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('nav-toggle');
+    const navLinks  = document.getElementById('nav-links');
+
+    if (toggleBtn && navLinks) {
+      toggleBtn.addEventListener('click', () => {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', !expanded);
+        navLinks.classList.toggle('show');
+        document.body.classList.toggle('menu-open', !expanded);
+      });
+    }
+
+    // Highlight the link that matches the current page
     const curPage = location.pathname.split('/').pop() || 'index.html';
-    const link = document.querySelector(`.main-nav a[href="${curPage}"]`);
-    if (link) link.classList.add('active');
+    const curLink = document.querySelector(`.main-nav a[href="${curPage}"]`);
+    if (curLink) curLink.classList.add('active');
   });
 </script>
