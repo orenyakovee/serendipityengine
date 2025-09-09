@@ -229,38 +229,75 @@
     </style>
 </head>
 <body>
-     <div id="site-nav"></div>
+    <!-- ==================== Universal Nav Loader ==================== -->
+<!-- Placeholder that will be replaced by the language‑specific nav fragment -->
+<div id="site-nav"><p class="nav-loading">Chargement du menu…</p></div>
 
-  <!-- ==== NAVIGATION LOADER ==== -->
-  <script>
-    // Run after the whole document is parsed
-    document.addEventListener('DOMContentLoaded', () => {
-      // Build a path that works both at the repo root and in sub‑folders
-      const basePath = location.pathname.split('/').slice(0, -1).join('/') + '/';
-      const navUrl = basePath + 'nav.html';
+<script defer>
+/**
+ * Universal navigation loader.
+ *  • Detects page language via <html lang="">
+ *  • Loads the corresponding nav‑XX.html file
+ *  • Caches the result in sessionStorage for the session
+ *  • Highlights the active link
+ *  • Gracefully falls back on error
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('site-nav');
+    if (!container) return;
 
-      fetch(navUrl)
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          return response.text();
+    // -----------------------------------------------------------------
+    // 1️⃣ Determine which nav file to load
+    // -----------------------------------------------------------------
+    const htmlLang = document.documentElement.lang?.toLowerCase() || 'en'; // default to English
+    // Expected file naming: nav-fr.html, nav-es.html, nav-en.html, …
+    const navFile = `nav-${htmlLang}.html`;
+
+    // Build a robust absolute URL (works even when the page lives in sub‑folders)
+    const navUrl = new URL(navFile, location.href).pathname;
+
+    // -----------------------------------------------------------------
+    // 2️⃣ Session‑storage cache lookup
+    // -----------------------------------------------------------------
+    const cacheKey = `siteNav:${htmlLang}`;               // separate cache per language
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+        container.innerHTML = cached;
+        activateCurrentLink();
+        return;
+    }
+
+    // -----------------------------------------------------------------
+    // 3️⃣ Fetch the fragment
+    // -----------------------------------------------------------------
+    fetch(navUrl)
+        .then(resp => {
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            return resp.text();
         })
         .then(html => {
-          const container = document.getElementById('site-nav');
-          if (container) {
             container.innerHTML = html;
-
-            // OPTIONAL: Highlight the current page in the menu
-            const current = location.pathname.split('/').pop() || 'index.html';
-            const link = container.querySelector(`a[href="${current}"]`);
-            if (link) link.classList.add('active');
-          }
+            // Save for the rest of the session
+            sessionStorage.setItem(cacheKey, html);
+            activateCurrentLink();
         })
         .catch(err => {
-          console.error('❌ Navigation failed to load:', err);
-          // Fallback – you could show a plain‑text menu here if you like
+            console.error('❌ Nav load failed:', err);
+            container.innerHTML =
+                '<p class="nav-error">Impossible de charger le menu.</p>';
         });
-    });
-  </script>
+
+    // -----------------------------------------------------------------
+    // 4️⃣ Highlight the link that points to the current page
+    // -----------------------------------------------------------------
+    function activateCurrentLink() {
+        const curPage = location.pathname.split('/').pop() || 'index.html';
+        const link = container.querySelector(`a[href="${curPage}"]`);
+        if (link) link.classList.add('active');
+    }
+});
+</script>
+<!-- ==================== End Universal Nav Loader ==================== -->
     <div class="container">
         <header class="header">
             <h1>🌟 세렌디피티 발견 엔진</h1>
