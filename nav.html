@@ -13,42 +13,37 @@
 </nav>
 
 <style>
-/* Simple, responsive styling – you can tweak colors to match your design */
+/* ── existing background / colors ── */
 .main-nav {
   background: #111;
   padding: 0.8rem 1rem;
 }
-.main-nav ul {
-  list-style: none;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.main-nav a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-}
-.main-nav a:hover {
-  text-decoration: underline;
-}
 
-/* Mobile fallback – stack vertically */
-@media (max-width: 600px) {
-  .main-nav ul { flex-direction: column; }
-}
-  .main-nav a.active {
-  text-decoration: underline;
-  font-weight: bold;
-  color: #ffdd57;   /* bright accent – change to match your theme */
-}
-  .main-nav ul {
+/* ── NEW: center the list ── */
+.main-nav ul {
   list-style: none;
   margin: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;   /* <-- this centers the items */
   gap: 1.5rem;               /* spacing between links */
+}
+
+/* link styling (unchanged) */
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+.main-nav a:hover { text-decoration: underline; }
+
+/* active‑page highlight – you already have a gold colour */
+.main-nav a.active {
+  color: #ffd700;           /* gold */
+}
+
+/* mobile fallback – stack vertically */
+@media (max-width: 600px) {
+  .main-nav ul { flex-direction: column; align-items: center; }
 }
 </style>
