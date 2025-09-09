@@ -5,33 +5,33 @@
   <title>Language Navigation</title>
 
   <style>
-    /* ------------------------------------------------------------------
-       Base navigation styling – dark background, padding, colours
-       ------------------------------------------------------------------ */
+    /* --------------------------------------------------------------
+       1️⃣ Fixed language bar – stays at the top while scrolling
+       -------------------------------------------------------------- */
     .main-nav {
-      background:#111;                /* dark background */
-      padding:0.8rem 1rem;            /* vertical/horizontal spacing */
-      display:flex;                   /* flex container for centering */
-      justify-content:center;         /* centre the <ul> horizontally */
-      position:fixed;                 /* ★ fixed at the top of the viewport */
-      top:0;                          /* distance from top of window */
+      background:#111;
+      padding:0.8rem 1rem;
+      display:flex;
+      justify-content:center;
+      position:fixed;          /* ★ fixed, not sticky */
+      top:0;
       left:0;
       right:0;
-      width:100%;                     /* full‑width bar */
-      z-index:9999;                   /* stay above every other element */
-      box-shadow:0 2px 6px rgba(0,0,0,0.15); /* subtle separation */
+      width:100%;
+      z-index:9999;            /* above everything else */
+      box-shadow:0 2px 6px rgba(0,0,0,0.15);
     }
 
-    /* ------------------------------------------------------------------
-       List layout – horizontal on desktop, vertical on small screens
-       ------------------------------------------------------------------ */
+    /* --------------------------------------------------------------
+       2️⃣ List layout – horizontal on desktop, vertical on mobile
+       -------------------------------------------------------------- */
     .main-nav ul {
       list-style:none;
       margin:0;
       display:flex;
       flex-wrap:wrap;
-      justify-content:center;         /* centre the items */
-      gap:1.5rem;                     /* space between links */
+      justify-content:center;
+      gap:1.5rem;
     }
 
     @media (max-width:600px) {
@@ -41,42 +41,45 @@
       }
     }
 
-    /* ------------------------------------------------------------------
-       Link appearance
-       ------------------------------------------------------------------ */
+    /* --------------------------------------------------------------
+       3️⃣ Link appearance + active‑page highlight (gold)
+       -------------------------------------------------------------- */
     .main-nav a {
       color:#fff;
       text-decoration:none;
       font-weight:500;
     }
+    .main-nav a:hover { text-decoration:underline; }
+    .main-nav a.active { color:#ffd700; }   /* gold */
 
-    .main-nav a:hover {
-      text-decoration:underline;
+    /* --------------------------------------------------------------
+       4️⃣ BODY padding – prevents page content from hiding under the bar
+       -------------------------------------------------------------- */
+    body {
+      padding-top:70px;          /* height of the fixed bar (adjust if needed) */
     }
 
-    /* ------------------------------------------------------------------
-       Active‑page highlight – gold colour (the “beautiful gold alt font”)
-       ------------------------------------------------------------------ */
-    .main-nav a.active {
-      color:#ffd700;                  /* gold */
-    }
-
-    /* ------------------------------------------------------------------
-       Ensure the existing header on French/Spanish pages does not clip us
-       ------------------------------------------------------------------ */
+    /* --------------------------------------------------------------
+       5️⃣ SECONDARY HEADER – push it down **under** the fixed bar
+       -------------------------------------------------------------- */
+    /* 5A – give the header a top margin equal to the bar height */
     .site-header,
     header {
-      overflow:visible !important;
-      height:auto    !important;
+      margin-top:70px;           /* same value as body padding‑top */
     }
 
-    /* ------------------------------------------------------------------
-       Add top padding to the body so page content isn’t hidden behind the
-       fixed bar (adjust the value if you change the nav’s height).
-       ------------------------------------------------------------------ */
-    body {
-      padding-top:70px;               /* approx. nav height */
+    /* 5B – OPTIONAL: remove the header’s own shadow (if it has one) */
+    .site-header,
+    header {
+      box-shadow:none !important;
     }
+
+    /* --------------------------------------------------------------
+       6️⃣ (OPTION 1) Hide the secondary header completely
+       --------------------------------------------------------------
+    .site-header,
+    header { display:none !important; }
+    --------------------------------------------------------------- */
   </style>
 </head>
 
