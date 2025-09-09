@@ -6,19 +6,19 @@
 
   <style>
     /* ------------------------------------------------------------------
-       Base navigation styling – background, padding, font colours
+       Base navigation styling – dark background, padding, colours
        ------------------------------------------------------------------ */
     .main-nav {
       background:#111;                /* dark background */
       padding:0.8rem 1rem;            /* vertical/horizontal spacing */
       display:flex;                   /* flex container for centering */
       justify-content:center;         /* centre the <ul> horizontally */
-      position:sticky;                /* stick to top when scrolling */
-      top:0;                          /* distance from top of viewport */
+      position:fixed;                 /* ★ fixed at the top of the viewport */
+      top:0;                          /* distance from top of window */
       left:0;
       right:0;
       width:100%;                     /* full‑width bar */
-      z-index:9999;                   /* stay above the page header */
+      z-index:9999;                   /* stay above every other element */
       box-shadow:0 2px 6px rgba(0,0,0,0.15); /* subtle separation */
     }
 
@@ -71,8 +71,8 @@
     }
 
     /* ------------------------------------------------------------------
-       Add a little top padding to the body so page content isn’t hidden
-       behind the sticky bar (adjust if you change the nav height)
+       Add top padding to the body so page content isn’t hidden behind the
+       fixed bar (adjust the value if you change the nav’s height).
        ------------------------------------------------------------------ */
     body {
       padding-top:70px;               /* approx. nav height */
